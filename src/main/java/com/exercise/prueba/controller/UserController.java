@@ -43,16 +43,10 @@ public class UserController {
         return new ResponseEntity<User>(userService.save(user), HttpStatus.CREATED);
     }
 
-    @PostMapping("login")
+    @PostMapping("/login")
     public ResponseEntity<UserDTO> login(@RequestBody @Valid User user) {
-        String em = user.getUsername();
-        String pw = user.getPassword();
         Authentication authenticate = authenticationManager
-                .authenticate(
-                        new UsernamePasswordAuthenticationToken(
-                                em, pw
-                        )
-                );
+                .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
         UserDTO authenticatedUser = utils.mapUserToUserDTO((User) authenticate.getPrincipal());
 

@@ -1,16 +1,15 @@
 package com.exercise.prueba.service;
 
-import java.util.List;
-
+import com.exercise.prueba.exception.InvalidCredentialsException;
 import com.exercise.prueba.exception.InvalidPasswordFormatException;
+import com.exercise.prueba.model.User;
+import com.exercise.prueba.repository.UserRepository;
 import com.exercise.prueba.util.Utils;
-import jdk.nashorn.internal.runtime.regexp.RegExp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.exercise.prueba.model.User;
-import com.exercise.prueba.repository.UserRepository;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -38,7 +37,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new InvalidCredentialsException("wrong username or password", new Exception());
+        }
+        return user;
     }
 
 }
