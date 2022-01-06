@@ -11,4 +11,5 @@ import com.exercise.prueba.model.User;
 public interface UserRepository extends CrudRepository<User, Long> {
 	
 	List<User> findAll();
+	User findByEmail(String email);
 }

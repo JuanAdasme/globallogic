@@ -4,6 +4,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.persistence.ElementCollection;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +27,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     protected ResponseEntity<Object> handleJdbcSQLIntegrityConstraintViolationException(DataIntegrityViolationException e) {
         return buildError(HttpStatus.CONFLICT, "The user already exists");
+    }
+
+    @ExceptionHandler(InvalidJWTException.class)
+    protected ResponseEntity<Object> handleInvalidJWTException(InvalidJWTException e) {
+        return buildError(HttpStatus.FORBIDDEN, "auth: invalid JWT");
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    protected ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException e) {
+        return buildError(HttpStatus.BAD_REQUEST, "auth: wrong username or password");
     }
 
     @Override

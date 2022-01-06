@@ -1,70 +1,67 @@
 package com.exercise.prueba.controller;
 
+import com.exercise.prueba.dto.UserDTO;
 import com.exercise.prueba.model.User;
 import com.exercise.prueba.service.UserService;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.exercise.prueba.util.Utils;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/users")
+@AllArgsConstructor
 public class UserController {
 
-	@Autowired
-	private UserService userService;
+    private UserService userService;
+    private AuthenticationManager authenticationManager;
+    private Utils utils;
 
-	@GetMapping("/hello")
-	public @ResponseBody String helloWorld() {
-		return "Hello, world!";
-	}
+    @GetMapping("/hello")
+    public @ResponseBody
+    String helloWorld() {
+        return "Hello, world!";
+    }
 
-	@GetMapping
-	public @ResponseBody List<User> findAll() {
-		return userService.findAll();
-	}
+    @GetMapping
+    public @ResponseBody
+    List<User> findAll() {
+        return userService.findAll();
+    }
 
-	@PostMapping
-	public @ResponseBody ResponseEntity<User> save(@Valid @RequestBody User user) {
-		return new ResponseEntity<User>(userService.save(user), HttpStatus.CREATED);
-	}
+    @PostMapping("/sign-up")
+    public @ResponseBody
+    ResponseEntity<User> save(@Valid @RequestBody User user) {
+        return new ResponseEntity<User>(userService.save(user), HttpStatus.CREATED);
+    }
 
-	@PostMapping("/login")
-	public @ResponseBody User login(@RequestBody User user) {
-		String token = getJWTToken(user.getEmail());
-		user.setEmail(user.getEmail());
-		user.setToken(token);
-		return user;
-	}
+    @PostMapping("login")
+    public ResponseEntity<UserDTO> login(@RequestBody @Valid User user) {
+        String em = user.getUsername();
+        String pw = user.getPassword();
+        Authentication authenticate = authenticationManager
+                .authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                em, pw
+                        )
+                );
 
-	private String getJWTToken(String username) {
-		String secretKey = "mySecretKey";
-		List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-				.commaSeparatedStringToAuthorityList("ROLE_USER");
+        UserDTO authenticatedUser = utils.mapUserToUserDTO((User) authenticate.getPrincipal());
 
-		String token = Jwts
-				.builder()
-				.setId("softtekJWT")
-				.setSubject(username)
-				.claim("authorities",
-						grantedAuthorities.stream()
-								.map(GrantedAuthority::getAuthority)
-								.collect(Collectors.toList()))
-				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 600000))
-				.signWith(SignatureAlgorithm.HS512,
-						secretKey.getBytes()).compact();
-
-		return "Bearer " + token;
-	}
+        String newToken = utils.generateAccessToken(user);
+        authenticatedUser.setToken(newToken);
+        authenticatedUser.setLastLogin(LocalDateTime.now());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.AUTHORIZATION, newToken)
+                .body(authenticatedUser);
+    }
 
 }
