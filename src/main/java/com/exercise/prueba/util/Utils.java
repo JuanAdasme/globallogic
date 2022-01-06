@@ -16,6 +16,7 @@ public class Utils {
     private String jwtSecret;
     @Value("${security.jwt.issuer}")
     private String jwtIssuer;
+    private static final String passwordRegExp = "^(?=[a-zA-Z\\d]{8,12}$)(?=[a-z]*)(?=(?:[a-zA-Z]*[\\d]))(?=(?:[a-z\\d]*[A-Z][a-z\\d]*))[a-zA-Z\\d]*$";
 
     public String getUsernameByToken(String token) {
         Claims claims = Jwts.parser()
@@ -57,5 +58,9 @@ public class Utils {
         userDTO.setToken(user.getToken());
         userDTO.setIsActive(user.getIsActive());
         return userDTO;
+    }
+
+    public boolean isValidPassword(String password) {
+        return password.matches(passwordRegExp);
     }
 }

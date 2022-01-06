@@ -34,6 +34,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return buildError(HttpStatus.FORBIDDEN, "auth: invalid JWT");
     }
 
+    @ExceptionHandler(InvalidPasswordFormatException.class)
+    protected ResponseEntity<Object> handleBadCredentialsException(InvalidPasswordFormatException e) {
+        List<String> passwordValidations = new ArrayList<>();
+        passwordValidations.add("invalid password format");
+        passwordValidations.add("size should be between 8 and 12");
+        passwordValidations.add("should contain 2 numbers");
+        passwordValidations.add("should contain 1 uppercase character");
+        return buildError(HttpStatus.BAD_REQUEST, String.join("; ", passwordValidations));
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     protected ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException e) {
         return buildError(HttpStatus.BAD_REQUEST, "auth: wrong username or password");
