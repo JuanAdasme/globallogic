@@ -1,0 +1,4 @@
+security:
+  jwt:
+    secret: (mDzq7=Vc*Ba^G
+    issuer: localhost:8080

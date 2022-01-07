@@ -1,15 +1,15 @@
 package com.exercise.prueba.repository;
 
-import java.util.List;
-
+import com.exercise.prueba.model.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.exercise.prueba.model.User;
+import java.util.List;
 
 @Repository
 public interface UserRepository extends CrudRepository<User, Long> {
-	
-	List<User> findAll();
-	User findByEmail(String email);
+
+    List<User> findAll();
+
+    User findByEmail(String email);
 }

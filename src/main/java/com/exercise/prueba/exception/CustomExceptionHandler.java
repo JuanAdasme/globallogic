@@ -27,12 +27,12 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InvalidJWTException.class)
     protected ResponseEntity<Object> handleInvalidJWTException(InvalidJWTException e) {
-        return buildError(HttpStatus.FORBIDDEN, "auth: invalid JWT");
+        return buildError(HttpStatus.UNAUTHORIZED, "auth: invalid JWT");
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
     protected ResponseEntity<Object> handleInvalidCredentialsExceptions(InvalidCredentialsException e) {
-        return buildError(HttpStatus.BAD_REQUEST, "auth: wrong username or password");
+        return buildError(HttpStatus.UNAUTHORIZED, "auth: wrong username or password");
     }
 
     @ExceptionHandler(InvalidPasswordFormatException.class)
@@ -47,7 +47,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     protected ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException e) {
-        return buildError(HttpStatus.BAD_REQUEST, "auth: wrong username or password");
+        return buildError(HttpStatus.UNAUTHORIZED, "auth: wrong username or password");
     }
 
     @Override

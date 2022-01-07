@@ -1,14 +1,14 @@
 package com.exercise.prueba.service;
 
-import java.util.List;
-
 import com.exercise.prueba.model.User;
+
+import java.util.List;
 
 public interface UserService {
 
-	List<User> findAll();
+    List<User> findAll();
 
-	User save(User user);
+    User save(User user);
 
-	User findByEmail(String email);
+    User findByEmail(String email);
 }
