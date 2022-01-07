@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:prueba
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+security:
+  jwt:
+    secret: (mDzq7=Vc*Ba^G
+    issuer: localhost:8080
